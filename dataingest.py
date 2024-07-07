@@ -42,21 +42,24 @@ class Getdata():
         if self.type == "option":
             self.period == None
         
-    def Processdata(self, delzero = False): #Take args for whether to delete columns with all values as zero and for use case (1,3,6 month vol etc. & add other functions as and when)
+    def ProcessStockData(self, delzero = False):
         '''
         delzero = Whether to delete columns where all values are zero (Usually dividends and stock splits). Default setting is False
         '''
         if self.api == "yahoo":
             df_stock = pd.DataFrame()
             df_stock = yf.Ticker(self.symbol).history(self.period, self.interval, prepost=self.prepost, auto_adjust=self.auto_adjust, actions=self.actions)
+            df_stock.index = pd.to_datetime(df_stock.index, format="%Y%m%d")
+            df_stock = df_stock.rename_axis("Date")
+
 
             if delzero == True:
                 df_stock = df_stock.loc[:, df_stock.any()] #Deleting columns with all zero values
                 return df_stock
             else:
                 return df_stock
-        
-        
-      
-
-
+        else: #(Change to elif equals etrade etc. for other API functionality)
+            pass #Add second API of Etrade here
+    
+    def ProcessOptData(self):
+        pass #TBC
