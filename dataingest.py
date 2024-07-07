@@ -11,7 +11,7 @@ import datetime
 import time
 import sys
 
-class GetData():
+class Getdata():
 
     def __init__(self, symbol: str, period="1mo", interval="1d", prepost=False, actions=True, auto_adjust=True, type="stock", api="yahoo") -> None:
         
@@ -41,11 +41,22 @@ class GetData():
         # For Options data tackle about the output when building out the volcalc module
         if self.type == "option":
             self.period == None
-
         
+    def Processdata(self, delzero = False): #Take args for whether to delete columns with all values as zero and for use case (1,3,6 month vol etc. & add other functions as and when)
+        '''
+        delzero = Whether to delete columns where all values are zero (Usually dividends and stock splits). Default setting is False
+        '''
+        if self.api == "yahoo":
+            df_stock = pd.DataFrame()
+            df_stock = yf.Ticker(self.symbol).history(self.period, self.interval, prepost=self.prepost, auto_adjust=self.auto_adjust, actions=self.actions)
 
+            if delzero == True:
+                df_stock = df_stock.loc[:, df_stock.any()] #Deleting columns with all zero values
+                return df_stock
+            else:
+                return df_stock
         
+        
+      
 
 
-        
-        
