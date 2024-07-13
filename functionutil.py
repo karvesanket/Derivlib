@@ -35,4 +35,4 @@ def stockret(df, rettype="daily"):
         return df
     
 
-
+# Add thrust indicators tonight

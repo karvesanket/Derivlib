@@ -24,7 +24,7 @@ class Getdata():
         actions: stock splits or similar actions. Default set to True
         auto_adjust: Adjusted OHLC for dividends etc. Default is True
         type: stock or option data. Default set to stock data
-        api: default set to yahoo. support for etrade and other sources in dev
+        api: yahoo and FRED available. support for etrade and other sources in dev
 
         '''
 
