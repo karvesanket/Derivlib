@@ -63,3 +63,9 @@ class Getdata():
     
     def ProcessOptData(self):
         pass #TBC
+
+
+
+
+if __name__ == "__main__":
+    print("Module handling data ingestion from various APIs")

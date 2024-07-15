@@ -15,3 +15,4 @@ The Long term goal of this project is to be able to create a fully fledged packa
 - Addtional API support
 - Trading support for specific brokerages
 - Adding a GUI for ease of use
+- General Indicators for market health

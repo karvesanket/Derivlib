@@ -36,3 +36,7 @@ def stockret(df, rettype="daily"):
     
 
 # Add thrust indicators tonight
+
+
+if __name__ == "__main__":
+    print("Module containing general and helper functions")
