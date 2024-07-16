@@ -3,7 +3,7 @@
 
 import pandas as pd
 import numpy as np
-import datetime
+from pandas.tseries.offsets import BDay
 
 def dayfinder(df):
     '''
@@ -24,8 +24,8 @@ def stockret(df, rettype="daily"):
         return df
     
     elif rettype == "weekly":
-        df = df.resample("W")
-        df.head()
+        df['last_business_day'] = df.index.to_series().apply(lambda x: x - BDay(0))
+        df["last business day"] = df.last_business_day.max()
         # df['WkPctChg'] = np.log(df['Close'] / df['Close'].shift(1))
         return df
 

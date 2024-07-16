@@ -9,8 +9,8 @@ import volcalc as vc
 
 # print(price, price_bsm, px_greekcheck)
 
-iv_test = vc.IV_Option(0.85,18.99,15,160,5.198,0,"put").ImpliedVol_Calc()
-print(iv_test)
+stock_px = di.Getdata("VSCO", "1y","1d",True,type="stock",api="yahoo").ProcessStockData(delzero=True)
+stock_px = fu.stockret(stock_px,rettype="weekly")
+print(stock_px)
+stock_px.to_csv("checkdate.csv")
 
-# stock_px = di.Getdata("VSCO", "6mo","1d",True,type="stock",api="yahoo").ProcessStockData(delzero=True)
-# stock_px = fu.stockret(stock_px,rettype="daily")

@@ -6,10 +6,8 @@
 # 3d surface
 # vol smile / smirk
 
-# import optionpricer as op
-from optionpricer import Binomial_American
 from scipy.stats import norm
-import numpy as np
+import math
 
 class IV_Option:
     """
@@ -22,42 +20,52 @@ class IV_Option:
     K = Strike Price
     dte = days to expiry
     r = interest rate --> use non percentage form
+    errtol = error tolerace. Default set to 1e-5
     div = dividend yield ---> use non percentage form
-    type = call or put option
+    type = call or put option. Default set to call
 
     """
-    def __init__(self, mktpx, S, K, dte, r, div=0, type="put") -> None:
+    def __init__(self, mktpx, S, K, dte, r, errtol=1e-5, div=0, type="call") -> None:
         
         self.mktpx = mktpx
         self.S = S
         self.K = K
         self.dte = dte / 365
-        self.r = r / 100
+        self.r = r
+        self.errtol = errtol
         self.div = div / 100
         self.type = type.lower()
 
+    def IV_NewtonRaph(self, iter=100):
+        """
+        Parameters
+        ============
+        iter: Number of iterations to calculate IV. Default set to 100
         
-    def ImpliedVol_Calc(self):
-        errortolerance = 1.0e-2
-        vol_est = 0.05        
-        d1 = (np.log(self.S/self.K) + (self.r + 0.5 * vol_est ** 2) * self.dte) / (vol_est * np.sqrt(self.dte))
-        
-        
+        Returns
+        ==========
+        Implied Vol of an Option Contract
 
-        while True:
-            # optpx = op.Options(self.S,self.K,self.dte,self.r,vol_est, self.div, self.type).bsm_optionprice()
-            optpx = Binomial_American(self.S, self.K, self.dte, self.r, vol_est, 200, 0, self.type).CRR_method()
-            print(optpx)
+        """
+        if self.type == "call":
+            cp = 1
+        else:
+            cp = -1
+        imp_vol = math.sqrt(2 * math.pi / self.dte) * self.mktpx / self.S
+        # print("Initial volatility:", imp_vol) Commented out as it's not required unless needed to be seen
 
-            px_diff = self.mktpx - optpx
-            print(px_diff)
-            vega = self.S * norm.pdf(d1) * np.sqrt(self.dte)
+        for i in range(iter):
+            d1 = (math.log(self.S / self.K) + (self.r + 0.5 * imp_vol ** 2) * self.dte) / (imp_vol * math.sqrt(self.dte))
+            d2 = d1 - imp_vol * math.sqrt(self.dte)
+            vega = self.S * norm.pdf(d1) * math.sqrt(self.dte)
+            price0 = cp * self.S * norm.cdf(cp * d1) - cp * self.K * math.exp(-self.r * self.dte) * norm.cdf(cp * d2)
+            imp_vol = imp_vol - (price0 - self.mktpx) / vega
 
-            vol_est += px_diff / vega
-
-            if abs(self.mktpx - optpx < errortolerance):
+            if abs(price0 - self.mktpx) < self.errtol:
                 break
-        return vol_est
+
+        return round(imp_vol, 4) * 100
 
 if __name__ == "__main__":
-    print("Module for volatility related calculations")
+    implied_volatility = IV_Option(1.25,18.05,15,159,.05198,type="put").IV_NewtonRaph()
+    print("Implied volatility:", implied_volatility)
