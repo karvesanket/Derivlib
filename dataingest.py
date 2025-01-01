@@ -61,7 +61,9 @@ class Getdata():
         else: #(Change to elif equals etrade etc. for other API functionality)
             pass #Add second API of Etrade here
     
-    def ProcessOptData(self):
+    def ProcessOptData(self, opex = "Yes"):
+        self.opex = opex.lower()
+        
         options = pd.DataFrame()
         df_opt = yf.Ticker(self.symbol)
         expiry_dt = df_opt.options
@@ -74,9 +76,10 @@ class Getdata():
             opt['expirationDate'] = e
             options = options._append(opt, ignore_index=True)
 
-            options['expirationDate'] = pd.to_datetime(options['expirationDate']) 
-            options['dte'] = (options['expirationDate'] - datetime.datetime.today()).dt.days
-            
+            options['expirationDate'] = pd.to_datetime(options['expirationDate'])  
+            options['dte'] = (((options['expirationDate'] ) + datetime.timedelta(days = 1)) - datetime.datetime.today()).dt.days
+            #Find method to adjust for hourly dte corrections instead of daily. can use pre-ovn-mkt asts
+
             # Boolean column if the option is a CALL
             options['CALL'] = options['contractSymbol'].str[4:].apply(
                 lambda x: "C" in x)
@@ -87,7 +90,12 @@ class Getdata():
 
             #Dropping unwanted columns
             options = options.drop(columns = ['contractSize', 'currency', 'change', 'percentChange'])
-            return(options)
+
+            if self.opex == "No":
+                break
+            else:
+                return(options)
+        return(options)
 
 
 if __name__ == "__main__":
