@@ -62,9 +62,32 @@ class Getdata():
             pass #Add second API of Etrade here
     
     def ProcessOptData(self):
-        pass #TBC
+        options = pd.DataFrame()
+        df_opt = yf.Ticker(self.symbol)
+        expiry_dt = df_opt.options
 
+        options = pd.DataFrame()
 
+        for e in expiry_dt:       
+            opt = df_opt.option_chain(e)
+            opt = pd.DataFrame()._append(opt.calls)._append(opt.puts)
+            opt['expirationDate'] = e
+            options = options._append(opt, ignore_index=True)
+
+            options['expirationDate'] = pd.to_datetime(options['expirationDate']) 
+            options['dte'] = (options['expirationDate'] - datetime.datetime.today()).dt.days
+            
+            # Boolean column if the option is a CALL
+            options['CALL'] = options['contractSymbol'].str[4:].apply(
+                lambda x: "C" in x)
+            
+            options[['bid', 'ask', 'strike']] = options[['bid', 'ask', 'strike']].apply(pd.to_numeric)
+            # Using mid price
+            options['mid'] = (options['bid'] + options['ask']) / 2
+
+            #Dropping unwanted columns
+            options = options.drop(columns = ['contractSize', 'currency', 'change', 'percentChange'])
+            return(options)
 
 
 if __name__ == "__main__":

@@ -68,4 +68,4 @@ class IV_Option:
 
 if __name__ == "__main__":
     implied_volatility = IV_Option(1.25,18.05,15,159,.05198,type="put").IV_NewtonRaph()
-    print("Implied volatility:", implied_volatility)
+    print("Implied Volatility Check:", implied_volatility)
