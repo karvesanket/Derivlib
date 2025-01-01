@@ -81,12 +81,12 @@ class Getdata():
             #Find method to adjust for hourly dte corrections instead of daily. can use pre-ovn-mkt asts
 
             # Boolean column if the option is a CALL
-            options['CALL'] = options['contractSymbol'].str[4:].apply(
+            options['Type'] = options['contractSymbol'].str[4:].apply(
                 lambda x: "C" in x)
             
             options[['bid', 'ask', 'strike']] = options[['bid', 'ask', 'strike']].apply(pd.to_numeric)
             # Using mid price
-            options['mid'] = (options['bid'] + options['ask']) / 2
+            options['mid'] = (options['bid'] + options['ask']) / 2 
 
             #Dropping unwanted columns
             options = options.drop(columns = ['contractSize', 'currency', 'change', 'percentChange'])
